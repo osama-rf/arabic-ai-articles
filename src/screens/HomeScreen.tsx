@@ -9,7 +9,7 @@ import {
   FlatList,
   SafeAreaView 
 } from 'react-native';
-import { colors } from '../utils/colors';
+import { useTheme } from '../hooks/useTheme';
 import { getCategories } from '../utils/storage';
 import { mockArticles } from '../utils/mockData';
 import { Header } from '../components/Header';
@@ -19,9 +19,11 @@ import { Category, Article } from '../types';
 interface HomeScreenProps {
   onArticlePress: (article: Article) => void;
   onEditCategories: () => void;
+  onMenuPress?: () => void;
 }
 
-export const HomeScreen: React.FC<HomeScreenProps> = ({ onArticlePress, onEditCategories }) => {
+export const HomeScreen: React.FC<HomeScreenProps> = ({ onArticlePress, onEditCategories, onMenuPress }) => {
+  const { colors } = useTheme();
   const [categories, setCategories] = useState<Category[]>([]);
   const [activeCategory, setActiveCategory] = useState<string>('');
   const [filteredArticles, setFilteredArticles] = useState<Article[]>([]);
@@ -71,9 +73,11 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ onArticlePress, onEditCa
     <ArticleCard article={item} onPress={onArticlePress} />
   );
 
+  const styles = getStyles(colors);
+
   return (
     <SafeAreaView style={styles.container}>
-      <Header onAddPress={handleAddPress} />
+      <Header onAddPress={handleAddPress} onMenuPress={onMenuPress} />
       
       {categories.length > 0 && (
         <View style={styles.categoriesContainer}>
@@ -134,7 +138,7 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ onArticlePress, onEditCa
   );
 };
 
-const styles = StyleSheet.create({
+const getStyles = (colors: any) => StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: colors.background,

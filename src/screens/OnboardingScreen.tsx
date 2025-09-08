@@ -9,7 +9,7 @@ import {
   Alert,
   ActivityIndicator 
 } from 'react-native';
-import { colors } from '../utils/colors';
+import { useTheme } from '../hooks/useTheme';
 import { generateCategoriesFromInterests } from '../utils/mockData';
 import { saveCategories, saveInterests, getCategories, getInterests } from '../utils/storage';
 import { Category } from '../types';
@@ -20,6 +20,7 @@ interface OnboardingScreenProps {
 }
 
 export const OnboardingScreen: React.FC<OnboardingScreenProps> = ({ onComplete, isEditing = false }) => {
+  const { colors } = useTheme();
   const [interests, setInterests] = useState('');
   const [generatedCategories, setGeneratedCategories] = useState<Category[]>([]);
   const [isGenerating, setIsGenerating] = useState(false);
@@ -94,6 +95,8 @@ export const OnboardingScreen: React.FC<OnboardingScreenProps> = ({ onComplete, 
       Alert.alert('خطأ', 'فشل في حفظ التفضيلات. يرجى المحاولة مرة أخرى.');
     }
   };
+
+  const styles = getStyles(colors);
 
   return (
     <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
@@ -187,7 +190,7 @@ export const OnboardingScreen: React.FC<OnboardingScreenProps> = ({ onComplete, 
   );
 };
 
-const styles = StyleSheet.create({
+const getStyles = (colors: any) => StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: colors.background,
@@ -258,7 +261,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   buttonText: {
-    color: colors.text,
+    color: colors.primaryText,
     fontSize: 16,
     fontWeight: '600',
     marginLeft: 8,
@@ -296,6 +299,6 @@ const styles = StyleSheet.create({
     fontWeight: '500',
   },
   categoryChipTextActive: {
-    color: colors.text,
+    color: colors.primaryText,
   },
 });

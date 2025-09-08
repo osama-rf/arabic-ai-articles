@@ -1,18 +1,24 @@
 import React from 'react';
-import { View, Text, Image, TouchableOpacity, StyleSheet } from 'react-native';
-import { colors } from '../utils/colors';
-import { mockUser } from '../utils/mockData';
+import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import { Bars3Icon } from 'react-native-heroicons/outline';
+import { useTheme } from '../hooks/useTheme';
 
 interface HeaderProps {
   onAddPress?: () => void;
+  onMenuPress?: () => void;
 }
 
-export const Header: React.FC<HeaderProps> = ({ onAddPress }) => {
+export const Header: React.FC<HeaderProps> = ({ onAddPress, onMenuPress }) => {
+  const { colors } = useTheme();
+  const styles = getStyles(colors);
+
   return (
     <View style={styles.container}>
       <View style={styles.leftSection}>
-        <Image source={{ uri: mockUser.avatar }} style={styles.avatar} />
-        <Text style={styles.greeting}>مرحباً، {mockUser.name}</Text>
+        <TouchableOpacity style={styles.menuButton} onPress={onMenuPress}>
+          <Bars3Icon size={24} color={colors.text} />
+        </TouchableOpacity>
+        <Text style={styles.appTitle}>مقالات الذكاء الاصطناعي</Text>
       </View>
       
       <TouchableOpacity style={styles.addButton} onPress={onAddPress}>
@@ -22,7 +28,7 @@ export const Header: React.FC<HeaderProps> = ({ onAddPress }) => {
   );
 };
 
-const styles = StyleSheet.create({
+const getStyles = (colors: any) => StyleSheet.create({
   container: {
     flexDirection: 'row',
     justifyContent: 'space-between',
@@ -38,16 +44,19 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     flex: 1,
   },
-  avatar: {
+  menuButton: {
     width: 40,
     height: 40,
     borderRadius: 20,
+    justifyContent: 'center',
+    alignItems: 'center',
     marginRight: 12,
+    backgroundColor: colors.surface,
   },
-  greeting: {
+  appTitle: {
     color: colors.text,
-    fontSize: 16,
-    fontWeight: '500',
+    fontSize: 18,
+    fontWeight: 'bold',
   },
   addButton: {
     width: 40,
@@ -58,7 +67,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   addButtonText: {
-    color: colors.text,
+    color: colors.primaryText,
     fontSize: 24,
     fontWeight: 'bold',
     lineHeight: 24,

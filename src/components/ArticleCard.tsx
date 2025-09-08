@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, Text, Image, TouchableOpacity, StyleSheet } from 'react-native';
-import { colors } from '../utils/colors';
+import { useTheme } from '../hooks/useTheme';
 import { Article } from '../types';
 
 interface ArticleCardProps {
@@ -9,6 +9,9 @@ interface ArticleCardProps {
 }
 
 export const ArticleCard: React.FC<ArticleCardProps> = ({ article, onPress }) => {
+  const { colors } = useTheme();
+  const styles = getStyles(colors);
+
   return (
     <TouchableOpacity 
       style={styles.container} 
@@ -40,7 +43,7 @@ export const ArticleCard: React.FC<ArticleCardProps> = ({ article, onPress }) =>
   );
 };
 
-const styles = StyleSheet.create({
+const getStyles = (colors: any) => StyleSheet.create({
   container: {
     backgroundColor: colors.surface,
     borderRadius: 8,

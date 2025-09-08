@@ -1,18 +1,24 @@
+import 'react-native-gesture-handler';
 import React, { useState, useEffect } from 'react';
 import { View, StyleSheet, StatusBar, I18nManager } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
+import { createDrawerNavigator } from '@react-navigation/drawer';
 
 import { OnboardingScreen } from './src/screens/OnboardingScreen';
 import { HomeScreen } from './src/screens/HomeScreen';
 import { ReadingScreen } from './src/screens/ReadingScreen';
+import { DrawerContent } from './src/components/DrawerContent';
+import { ThemeProvider } from './src/contexts/ThemeContext';
+import { useTheme } from './src/hooks/useTheme';
 import { getCategories } from './src/utils/storage';
-import { colors } from './src/utils/colors';
 import { RootStackParamList, Article } from './src/types';
 
 const Stack = createStackNavigator<RootStackParamList>();
+const Drawer = createDrawerNavigator();
 
-export default function App() {
+const AppContent = () => {
+  const { colors } = useTheme();
   const [hasCompletedOnboarding, setHasCompletedOnboarding] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -54,69 +60,105 @@ export default function App() {
     navigation.goBack();
   };
 
+  const handleMenuPress = (navigation: any) => {
+    navigation.openDrawer();
+  };
+
+  // Main Stack Navigator
+  const MainStack = () => (
+    <Stack.Navigator
+      screenOptions={{
+        headerShown: false,
+        cardStyle: { backgroundColor: colors.background },
+      }}
+    >
+      <Stack.Screen name="Home">
+        {({ navigation }) => (
+          <HomeScreen 
+            onArticlePress={(article) => handleArticlePress(article, navigation)}
+            onEditCategories={() => handleEditCategories(navigation)}
+            onMenuPress={() => handleMenuPress(navigation)}
+          />
+        )}
+      </Stack.Screen>
+      <Stack.Screen name="Reading">
+        {({ route, navigation }) => (
+          <ReadingScreen 
+            article={route.params?.article}
+            onBack={() => handleBackToHome(navigation)}
+          />
+        )}
+      </Stack.Screen>
+      <Stack.Screen name="EditCategories">
+        {({ navigation }) => (
+          <OnboardingScreen 
+            onComplete={() => handleCategoriesUpdated(navigation)}
+            isEditing={true}
+          />
+        )}
+      </Stack.Screen>
+    </Stack.Navigator>
+  );
+
   if (isLoading) {
-    return <View style={styles.loading} />;
+    return <View style={[styles.loading, { backgroundColor: colors.background }]} />;
   }
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, { backgroundColor: colors.background }]}>
       <StatusBar 
-        barStyle="light-content" 
+        barStyle={colors.text === '#f8fafc' ? 'light-content' : 'dark-content'} 
         backgroundColor={colors.background} 
         translucent={false}
       />
       <NavigationContainer>
-        <Stack.Navigator
-          screenOptions={{
-            headerShown: false,
-            cardStyle: { backgroundColor: colors.background },
-          }}
-        >
-          {!hasCompletedOnboarding ? (
+{!hasCompletedOnboarding ? (
+          <Stack.Navigator
+            screenOptions={{
+              headerShown: false,
+              cardStyle: { backgroundColor: colors.background },
+            }}
+          >
             <Stack.Screen name="Onboarding">
               {() => <OnboardingScreen onComplete={handleOnboardingComplete} />}
             </Stack.Screen>
-          ) : (
-            <>
-              <Stack.Screen name="Home">
-                {({ navigation }) => (
-                  <HomeScreen 
-                    onArticlePress={(article) => handleArticlePress(article, navigation)}
-                    onEditCategories={() => handleEditCategories(navigation)}
-                  />
-                )}
-              </Stack.Screen>
-              <Stack.Screen name="Reading">
-                {({ route, navigation }) => (
-                  <ReadingScreen 
-                    article={route.params?.article}
-                    onBack={() => handleBackToHome(navigation)}
-                  />
-                )}
-              </Stack.Screen>
-              <Stack.Screen name="EditCategories">
-                {({ navigation }) => (
-                  <OnboardingScreen 
-                    onComplete={() => handleCategoriesUpdated(navigation)}
-                    isEditing={true}
-                  />
-                )}
-              </Stack.Screen>
-            </>
-          )}
-        </Stack.Navigator>
+          </Stack.Navigator>
+        ) : (
+          <Drawer.Navigator
+            drawerContent={() => <DrawerContent />}
+            screenOptions={{
+              headerShown: false,
+              drawerPosition: 'right',
+              drawerType: 'slide',
+              drawerStyle: {
+                width: 280,
+              },
+            }}
+          >
+            <Drawer.Screen 
+              name="MainApp" 
+              component={MainStack}
+            />
+          </Drawer.Navigator>
+        )}
       </NavigationContainer>
     </View>
+  );
+}
+
+export default function App() {
+  return (
+    <ThemeProvider>
+      <AppContent />
+    </ThemeProvider>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: colors.background,
   },
   loading: {
     flex: 1,
-    backgroundColor: colors.background,
   },
 });
