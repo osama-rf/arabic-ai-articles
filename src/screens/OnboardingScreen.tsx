@@ -91,7 +91,7 @@ export const OnboardingScreen: React.FC<OnboardingScreenProps> = ({ onComplete, 
       await saveInterests(interests);
       await saveCategories(activeCategories);
       onComplete();
-    } catch (error) {
+    } catch {
       Alert.alert('خطأ', 'فشل في حفظ التفضيلات. يرجى المحاولة مرة أخرى.');
     }
   };

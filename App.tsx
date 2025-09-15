@@ -9,7 +9,6 @@ import { OnboardingScreen } from './src/screens/OnboardingScreen';
 import { HomeScreen } from './src/screens/HomeScreen';
 import { ReadingScreen } from './src/screens/ReadingScreen';
 import { DrawerContent } from './src/components/DrawerContent';
-import { ThemeProvider } from './src/contexts/ThemeContext';
 import { useTheme } from './src/hooks/useTheme';
 import { getCategories } from './src/utils/storage';
 import { RootStackParamList, Article } from './src/types';
@@ -147,11 +146,7 @@ const AppContent = () => {
 }
 
 export default function App() {
-  return (
-    <ThemeProvider>
-      <AppContent />
-    </ThemeProvider>
-  );
+  return <AppContent />;
 }
 
 const styles = StyleSheet.create({

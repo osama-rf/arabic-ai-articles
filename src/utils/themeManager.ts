@@ -36,7 +36,7 @@ export type ColorScheme = typeof darkColors;
 // Global theme state
 let currentTheme: Theme = 'dark';
 let currentColors: ColorScheme = darkColors;
-let themeChangeListeners: Array<() => void> = [];
+let themeChangeListeners: (() => void)[] = [];
 
 // Get current colors (can be called from anywhere)
 export const getCurrentColors = (): ColorScheme => {
